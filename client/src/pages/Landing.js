@@ -1,13 +1,14 @@
 import React from "react";
-import LogoName from '../assets/images/logo.svg'
-import Main from '../assets/images/main.svg'
-import styled from "styled-components";
+import Main from '../assets/images/main-alternative.svg'
+import { Logo } from '../components/index'
+import Wrapper from '../assets/wrappers/LandingPage'
+import { Link } from 'react-router-dom'
 
 const Landing = () => {
     return (
-        <main>
+        <Wrapper>
             <nav>
-                <img src={LogoName} alt="'jobify" className="logo" />
+                <Logo />
             </nav>
             <div className="container page">
                 <div className="info">
@@ -20,23 +21,12 @@ const Landing = () => {
                         provident perspiciatis sed adipisci earum alias reprehenderit,
                         tempore magnam inventore? Fugit, excepturi dolore!
                     </p>
-                    <button className="btn btn-hero">login/Register</button>
+                    <Link to='/register' className="btn btn-hero">login/Register</Link>
                 </div>
                 <img src={Main} alt="job hunt" className="img main-img" />
             </div>
-        </main>
+        </Wrapper>
     );
 };
-
-const Wrapper = styled.main`
-  nav {
-    width: var(--fluid-width);
-    max-width: var(--max-width);
-    margin: 0 auto;
-    height: var(--nav-height);
-    display: flex;
-    align-items: center;
-  }
-`;
 
 export default Landing;
