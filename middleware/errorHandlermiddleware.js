@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes"
 
 export const errorHandler = (error, req, res, next) => {
+    console.log(error);
     const defaultError = {
         statusCode: error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
         msg: error.message || "Sorry something went wrong try again later"
