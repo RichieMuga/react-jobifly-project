@@ -17,7 +17,6 @@ export const errorHandler = (error, req, res, next) => {
     }
     // console.log(error);
     return res.status(defaultError.statusCode).json({ msg: defaultError.msg })
-    // return res.status(defaultError.statusCode).json({ msg: error })
 
 }
 
