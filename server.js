@@ -16,6 +16,11 @@ import jobsHandler from "./routers/jobsRouter.js"
 
 app.use(express.json())
 
+//rough work
+app.get('/', (req, res) => {
+    res.send('welcome')
+})
+
 // router use
 app.use('/api/v1/auth', authHandler)
 app.use("/api/v1/jobs", jobsHandler)
