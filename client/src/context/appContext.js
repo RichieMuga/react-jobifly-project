@@ -1,12 +1,15 @@
 import React, { useReducer, useContext } from "react";
-import { CLEAR_ALERT, DISPLAY_ALERT } from "./actions";
+import { CLEAR_ALERT, DISPLAY_ALERT, REGISTER_USER_BEGIN, REGISTER_USER_SUCCESS, REGISTER_USER_ERROR } from "./actions";
 import { reducer } from "./reducer";
 
 const initialState = {
     isloading: false,
     showAlert: false,
     alertText: '',
-    alertType: ''
+    alertType: '',
+    user: null,
+    token: null,
+    userLocation: ''
 }
 
 //create context
@@ -24,10 +27,12 @@ const AppProvider = ({ children }) => {
             dispatch({ type: CLEAR_ALERT })
         }, 4000);
     }
-
+    const registerUser = async (currentUser) => {
+        console.log(currentUser)
+    }
 
     return (
-        <AppContext.Provider value={{ ...state, displayAlert }}>
+        <AppContext.Provider value={{ ...state, displayAlert, registerUser }}>
             {children}
         </AppContext.Provider>
     )
