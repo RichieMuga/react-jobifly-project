@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
 })
 
 // router use
-app.use('/api/v1/auth', authHandler)
+app.use("/api/v1/auth", authHandler)
 app.use("/api/v1/jobs", jobsHandler)
 
 

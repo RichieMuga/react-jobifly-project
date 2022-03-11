@@ -4,6 +4,7 @@ import { Logo, FormRow, Alert } from '../components';
 import Wrapper from '../assets/wrappers/RegisterPage';
 import { useAppContext } from '../context/appContext';
 
+
 const initialState = {
     isMember: true,
     name: '',

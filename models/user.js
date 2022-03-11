@@ -26,11 +26,11 @@ const UserSchema = new mongoose.Schema({
         minlength: 6,
         select: false
     },
-    LastName: {
+    lastName: {
         type: String,
         trim: true,
-        default: 'lastname',
-        maxlength: 20
+        maxlength: 20,
+        default: 'lastname'
     },
     location: {
         type: String,
