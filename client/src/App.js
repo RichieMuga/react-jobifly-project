@@ -1,11 +1,18 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { Dashboard, Register, Landing, Error } from './pages'
+import { Register, Landing, Error } from './pages'
+import { AddJob, AllJobs, Profile, SharedLayout, Stats } from './pages/dasboard'
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<Dashboard />} />
+
+        <Route path='/'>
+          <Route path='profile' element={<Profile />}></Route>
+          <Route path='AllJobs' element={<AllJobs />}></Route>
+          <Route path='Stats' element={<Stats />}></Route>
+          <Route path='AddJob' element={<AddJob />}></Route>
+        </Route>
         <Route path='/register' element={<Register />} />
         <Route path='/landing' element={<Landing />} />
         <Route path='*' element={<Error />} />
