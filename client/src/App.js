@@ -7,10 +7,10 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        <Route path='/'>
+        <Route path='/' element={<SharedLayout />}>
+          <Route index path='Stats' element={<Stats />}></Route>
           <Route path='profile' element={<Profile />}></Route>
           <Route path='AllJobs' element={<AllJobs />}></Route>
-          <Route path='Stats' element={<Stats />}></Route>
           <Route path='AddJob' element={<AddJob />}></Route>
         </Route>
         <Route path='/register' element={<Register />} />
