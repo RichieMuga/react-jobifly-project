@@ -6,7 +6,8 @@ import {
     REGISTER_USER_ERROR,
     LOGIN_USER_BEGIN,
     LOGIN_USER_SUCCESS,
-    LOGIN_USER_ERROR
+    LOGIN_USER_ERROR,
+    TOGGLE_SIDE_BAR
 } from "./actions"
 
 const reducer = (state, action) => {
@@ -68,6 +69,9 @@ const reducer = (state, action) => {
             alertText: action.payload.msg,
             isloading: false
         }
+    }
+    if (action.type === TOGGLE_SIDE_BAR) {
+        return { ...state, showSidebar: !state.showSidebar }
     }
     throw new Error(`No such action ${action.type}`)
 }

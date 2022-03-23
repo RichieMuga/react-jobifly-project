@@ -7,7 +7,8 @@ import {
     REGISTER_USER_ERROR,
     LOGIN_USER_BEGIN,
     LOGIN_USER_SUCCESS,
-    LOGIN_USER_ERROR
+    LOGIN_USER_ERROR,
+    TOGGLE_SIDE_BAR
 } from "./actions";
 import { reducer } from "./reducer";
 import axios from 'axios';
@@ -27,7 +28,8 @@ const initialState = {
     user: user ? JSON.parse(user) : null,
     token: token || '',
     userLocation: userLocation || '',
-    joblocation: userLocation || ''
+    joblocation: userLocation || '',
+    showSidebar: false
 }
 
 //create context
@@ -44,6 +46,9 @@ const AppProvider = ({ children }) => {
         setTimeout(() => {
             dispatch({ type: CLEAR_ALERT })
         }, 4000);
+    }
+    const toggleSidebar = () => {
+        dispatch({ type: TOGGLE_SIDE_BAR })
     }
 
     const addUserToLocalStorage = (token, user, location) => {
@@ -106,7 +111,7 @@ const AppProvider = ({ children }) => {
     }
 
     return (
-        <AppContext.Provider value={{ ...state, displayAlert, registerUser, loginUser }}>
+        <AppContext.Provider value={{ ...state, displayAlert, registerUser, loginUser, toggleSidebar }}>
             {children}
         </AppContext.Provider>
     )
