@@ -7,13 +7,11 @@ import { useState } from 'react';
 
 const NavBar = () => {
     const [showLogOut, setshowLogOut] = useState(false)
-    // const toggleBigSidebar=(e)=>{
-    //     e.preventDefault()
-    // }
+    const { user, logout, toggleSidebar } = useAppContext()
     return (
         <Wrapper>
             <div className="nav-center">
-                <button type='button' className='toggle-btn' onClick={() => console.log('toggle big side bar')}>
+                <button type='button' className='toggle-btn' onClick={toggleSidebar}>
                     <FaAlignLeft />
                 </button>
                 <div>
@@ -23,11 +21,11 @@ const NavBar = () => {
                 <div className="btn-container">
                     <button type='button' className='btn' onClick={() => setshowLogOut(!showLogOut)}>
                         <FaUserCircle />
-                        sam
+                        {user && user.name}
                         <FaCaretDown />
                     </button>
                     <div className={showLogOut ? 'show-dropdown' : 'dropdown'}>
-                        <button type='button' className='dropdown-btn' onClick={() => console.log('logout')}>
+                        <button type='button' className='dropdown-btn' onClick={logout}>
                             logout
                         </button>
                     </div>

@@ -8,7 +8,8 @@ import {
     LOGIN_USER_BEGIN,
     LOGIN_USER_SUCCESS,
     LOGIN_USER_ERROR,
-    TOGGLE_SIDE_BAR
+    TOGGLE_SIDE_BAR,
+    LOG_OUT_USER,
 } from "./actions";
 import { reducer } from "./reducer";
 import axios from 'axios';
@@ -109,13 +110,18 @@ const AppProvider = ({ children }) => {
         }
         clearAlert()
     }
+    const logout = () => {
+        dispatch({ type: LOG_OUT_USER })
+        removeUserFromLocal()
+    }
 
     return (
-        <AppContext.Provider value={{ ...state, displayAlert, registerUser, loginUser, toggleSidebar }}>
+        <AppContext.Provider value={{ ...state, displayAlert, registerUser, loginUser, toggleSidebar, logout }}>
             {children}
         </AppContext.Provider>
     )
 }
+
 
 export const useAppContext = () => {
     return useContext(AppContext)
