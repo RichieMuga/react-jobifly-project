@@ -10,10 +10,12 @@ import connectDB from './db/connect.js'
 //middleware and authentication
 import notFoundMiddleware from './middleware/notFound.js'
 import { errorHandler } from './middleware/errorHandlermiddleware.js'
+import auth from './middleware/auth.js'
 
 //routers
 import authHandler from "./routers/authHandlerRouter.js";
 import jobsHandler from "./routers/jobsRouter.js"
+
 
 if (process.env.NODE_ENV !== 'production') {
     app.use(morgan('tiny'))
@@ -28,7 +30,7 @@ app.get('/', (req, res) => {
 
 // router use
 app.use("/api/v1/auth", authHandler)
-app.use("/api/v1/jobs", jobsHandler)
+app.use("/api/v1/jobs", auth, jobsHandler)
 
 
 app.use(notFoundMiddleware)
