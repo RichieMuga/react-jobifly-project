@@ -37,8 +37,21 @@ const login = async (req, res) => {
 
     res.status(StatusCodes.OK).json({ token, location: user.location, user })
 }
-const updateUser = (req, res) => {
-    res.send('updateUser')
+const updateUser = async (req, res) => {
+    const { email, name, lastName, location } = req.body
+    if (!email || !name || !lastName || !location) {
+        throw new UnathenticatedError('please provide all values')
+    }
+    const user = await User.findOne({ _id: req.user.userId })
+
+    user.name = name
+    user.email = email
+    user.lastName = lastName
+    user.location = location
+
+    await user.save()
+    const token = user.createjwt()
+    res.status(StatusCodes.OK).json({ location: user.location, user })
 }
 
 export { register, login, updateUser }
