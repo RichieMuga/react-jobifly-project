@@ -13,6 +13,7 @@ import {
 } from "./actions";
 import { reducer } from "./reducer";
 import axios from 'axios';
+import { header } from "express/lib/request";
 
 //setup user when app loads
 const token = localStorage.getItem('token')
@@ -109,14 +110,28 @@ const AppProvider = ({ children }) => {
             })
         }
         clearAlert()
+
     }
     const logout = () => {
         dispatch({ type: LOG_OUT_USER })
         removeUserFromLocal()
     }
+    const updateUser = async (currentUser) => {
+        try {
+            const { data } = await axios.patch('/api/v1/auth/updateUser', currentUser, {
+                headers: {
+                    Authorization: `Bearer ${state.token}`
+                }
+            })
+        } catch (error) {
+
+        }
+
+
+    }
 
     return (
-        <AppContext.Provider value={{ ...state, displayAlert, registerUser, loginUser, toggleSidebar, logout }}>
+        <AppContext.Provider value={{ ...state, displayAlert, registerUser, loginUser, toggleSidebar, logout, updateUser }}>
             {children}
         </AppContext.Provider>
     )
