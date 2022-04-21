@@ -5,18 +5,20 @@ import Wrapper from '../../assets/wrappers/DashboardFormPage'
 
 const Profile = () => {
     const { user, displayAlert, updateUser, isloading, showAlert } = useAppContext()
-    const { name, setName } = useState(user?.name)
-    const { email, setEmail } = useState(user?.email)
-    const { lastName, setLastName } = useState(user?.lastName)
-    const { location, setLocation } = useState(user?.location)
+    const [name, setName] = useState(user?.name)
+    const [email, setEmail] = useState(user?.email)
+    const [lastName, setLastName] = useState(user?.lastName)
+    const [location, setLocation] = useState(user?.location)
 
     const handleSubmit = (e) => {
         e.preventDefault()
+        //remove while testing
         // if (!name || !location || !lastName || !email) {
         //     displayAlert()
         //     return
         // }
         updateUser({ name, email, lastName, location })
+        console.log(user)
     }
     return (
         <Wrapper>

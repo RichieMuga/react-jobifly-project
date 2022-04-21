@@ -13,7 +13,7 @@ import {
 } from "./actions";
 import { reducer } from "./reducer";
 import axios from 'axios';
-import { header } from "express/lib/request";
+//import { header } from "express/lib/request";
 
 //setup user when app loads
 const token = localStorage.getItem('token')
@@ -39,6 +39,30 @@ const AppContext = React.createContext()
 
 const AppProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
+
+
+    //axios
+    const authFetch = axios.create({
+        baseURL: 'api/v1'
+    })
+
+    //request
+    authFetch.interceptors.request.use((config) => {
+        // config.headers.common['Authorization'] = `Bearer ${state.token}`
+        return config
+    }, (error) => {
+        return Promise.reject(error)
+    })
+    authFetch.interceptors.response.use(function (response) {
+
+        return response;
+    }, function (error) {
+        console.log(error.response);
+        if (error.response.status === 401) {
+            console.log('AUTH ERROR');
+        }
+        return Promise.reject(error);
+    });
 
     const displayAlert = () => {
         dispatch({ type: DISPLAY_ALERT })
@@ -68,7 +92,7 @@ const AppProvider = ({ children }) => {
     const registerUser = async (currentUser) => {
         dispatch({ type: REGISTER_USER_BEGIN })
         try {
-            const response = await axios.post('/api/v1/auth/register', currentUser)
+            const response = await authFetch.post('/auth/register', currentUser)
             // console.log(response);
             const { user, location, token } = response.data
             dispatch({
@@ -118,16 +142,12 @@ const AppProvider = ({ children }) => {
     }
     const updateUser = async (currentUser) => {
         try {
-            const { data } = await axios.patch('/api/v1/auth/updateUser', currentUser, {
-                headers: {
-                    Authorization: `Bearer ${state.token}`
-                }
-            })
+            const { data } = await authFetch.patch('/auth/updateUser', currentUser)
+            console.log(data)
+
         } catch (error) {
-
+            //console.log(error.response);
         }
-
-
     }
 
     return (
