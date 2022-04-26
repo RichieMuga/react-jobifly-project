@@ -34,7 +34,16 @@ const initialState = {
     token: token || '',
     userLocation: userLocation || '',
     joblocation: userLocation || '',
-    showSidebar: false
+    showSidebar: false,
+    isEdiing:'',
+    editedJobId:'',
+    position:'',
+    company:'',
+    jobLocation:'',
+    jobTypeOptions:['full-time','part-time','remote','internship'],
+    jobType:'full-time',
+    statusOptions:['pending','declined','interview'],
+    status:'pending'
 }
 
 //create context
