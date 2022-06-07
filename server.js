@@ -2,6 +2,7 @@ import express from 'express'
 const app = express()
 import dotenv from 'dotenv'
 dotenv.config()
+//handles throws and await
 import "express-async-errors"
 import morgan from "morgan"
 import connectDB from './db/connect.js'

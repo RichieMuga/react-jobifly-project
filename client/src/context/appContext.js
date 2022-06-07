@@ -12,7 +12,12 @@ import {
     LOG_OUT_USER,
     UPDATE_USER_BEGIN,
     UPDATE_USER_SUCCESS,
-    UPDATE_USER_ERROR
+    UPDATE_USER_ERROR,
+    HANDLE_CHANGE,
+    CLEAR_VALUES,
+    CREATE_JOB_BEGIN,
+    CREATE_JOB_SUCCESS,
+    CREATE_JOB_ERROR,
 } from "./actions";
 import { reducer } from "./reducer";
 import axios from 'axios';
@@ -21,29 +26,28 @@ import axios from 'axios';
 //setup user when app loads
 const token = localStorage.getItem('token')
 const user = localStorage.getItem('user')
-const userLocation = localStorage.getItem('userLocation')
+const userLocation = localStorage.getItem('location')
 
 
 
 const initialState = {
-    isloading: false,
+    isLoading: false,
     showAlert: false,
     alertText: '',
     alertType: '',
     user: user ? JSON.parse(user) : null,
     token: token || '',
     userLocation: userLocation || '',
-    joblocation: userLocation || '',
+    jobLocation: userLocation || '',
     showSidebar: false,
-    isEdiing:'',
-    editedJobId:'',
-    position:'',
-    company:'',
-    jobLocation:'',
-    jobTypeOptions:['full-time','part-time','remote','internship'],
-    jobType:'full-time',
-    statusOptions:['pending','declined','interview'],
-    status:'pending'
+    isEditing: '',
+    editedJobId: '',
+    position: '',
+    company: '',
+    jobTypeOptions: ['full-time', 'part-time', 'remote', 'internship'],
+    jobType: 'full-time',
+    statusOptions: ['pending', 'declined', 'interview'],
+    status: 'pending'
 }
 
 //create context
@@ -71,7 +75,7 @@ const AppProvider = ({ children }) => {
     }, function (error) {
         console.log(error.response);
         if (error.response.status === 401) {
-            dispatch({type:LOG_OUT_USER})
+            dispatch({ type: LOG_OUT_USER })
         }
         return Promise.reject(error);
     });
@@ -153,26 +157,51 @@ const AppProvider = ({ children }) => {
         removeUserFromLocal()
     }
     const updateUser = async (currentUser) => {
-        dispatch({type: UPDATE_USER_BEGIN})
+        dispatch({ type: UPDATE_USER_BEGIN })
         try {
             const { data } = await authFetch.patch('/auth/updateUser', currentUser)
             //console.log(data)
-            const {user,location,token}=data
-            dispatch({type:UPDATE_USER_SUCCESS,payload:{user,location,token} })
-            addUserToLocalStorage(token,user,location)
+            const { user, location, token } = data
+            dispatch({ type: UPDATE_USER_SUCCESS, payload: { user, location, token } })
+            addUserToLocalStorage(token, user, location)
         } catch (error) {
             if (error.response.status !== 401) {
-                dispatch({type:UPDATE_USER_ERROR,payload:{msg:error.response.data.msg}})
-            //console.log(error.response);
+                dispatch({ type: UPDATE_USER_ERROR, payload: { msg: error.response.data.msg } })
+                //console.log(error.response);
             }
-            dispatch({type:UPDATE_USER_ERROR,payload:{msg:error.response.data.msg}})
+            dispatch({ type: UPDATE_USER_ERROR, payload: { msg: error.response.data.msg } })
             //console.log(error.response);
         }
         clearAlert()
     }
+    const handlechange = ({ name, value }) => {
+        dispatch({ type: HANDLE_CHANGE, payload: { name, value } })
+    }
+
+    const clearvalues = () => {
+        dispatch({ type: CLEAR_VALUES })
+    }
+
+    const createjob = async () => {
+        dispatch({ type: CREATE_JOB_BEGIN })
+        try {
+            const { position, company, status, jobType, jobLocation } = state
+            await authFetch.post('/jobs', {
+                position, company, status, jobType, jobLocation
+            })
+            dispatch({ type: CREATE_JOB_SUCCESS })
+            dispatch({ type: CLEAR_VALUES })
+            clearAlert()
+        } catch (error) {
+            if (error.response.status === 401) {
+                dispatch({ type: CREATE_JOB_ERROR, payload: { msg: error.response.message } })
+
+            }
+        }
+    }
 
     return (
-        <AppContext.Provider value={{ ...state, displayAlert, registerUser, loginUser, toggleSidebar, logout, updateUser }}>
+        <AppContext.Provider value={{ ...state, displayAlert, registerUser, loginUser, toggleSidebar, logout, updateUser, handlechange, clearvalues, createjob }}>
             {children}
         </AppContext.Provider>
     )

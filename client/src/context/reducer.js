@@ -11,8 +11,13 @@ import {
     LOG_OUT_USER,
     UPDATE_USER_BEGIN,
     UPDATE_USER_SUCCESS,
-    UPDATE_USER_ERROR
-} from "./actions"
+    UPDATE_USER_ERROR,
+    HANDLE_CHANGE,
+    CLEAR_VALUES,
+    CREATE_JOB_BEGIN,
+    CREATE_JOB_SUCCESS,
+    CREATE_JOB_ERROR
+} from './actions';
 import { initialState } from './appContext';
 
 const reducer = (state, action) => {
@@ -88,32 +93,73 @@ const reducer = (state, action) => {
         }
     }
     if (action.type === UPDATE_USER_BEGIN) {
-        return({
+        return ({
             ...state,
-            isloading:true
+            isloading: true
         })
     }
     if (action.type === UPDATE_USER_SUCCESS) {
-        return{
+        return {
             ...state,
-            isloading:false,
-            token:action.payload.token,
-            user:action.payload.user,
-            userLocation:action.payload.location,
-            joblocation:action.payload.locaion,
-            showAlert:true,
-            alertType:'success',
-            alertText:'User profile updated'
+            isloading: false,
+            token: action.payload.token,
+            user: action.payload.user,
+            userLocation: action.payload.location,
+            joblocation: action.payload.locaion,
+            showAlert: true,
+            alertType: 'success',
+            alertText: 'User profile updated'
         }
     }
     if (action.type === UPDATE_USER_ERROR) {
-        return({
+        return ({
             ...state,
-            showAlert:true,
-            alertType:'danger',
+            showAlert: true,
+            alertType: 'danger',
             alertText: action.payload.msg,
             isloading: false
         })
+    }
+    if (action.type === HANDLE_CHANGE) {
+        return {
+            ...state,
+            [action.payload.name]: action.payload.value
+        }
+    }
+    if (action.type === CLEAR_VALUES) {
+        return {
+            ...state,
+            position: '',
+            company: '',
+            joblocation: state.userLocation,
+            jobType: 'full-time',
+            status: 'pending'
+
+        }
+    }
+    if (action.type === CREATE_JOB_BEGIN) {
+        return {
+            ...state,
+            isloading: true
+        }
+    }
+    if (action.type === CREATE_JOB_SUCCESS) {
+        return {
+            ...state,
+            showAlert: true,
+            alertType: 'success',
+            alertText: "Job created!",
+            isloading: false
+        }
+    }
+    if (action.type === CREATE_JOB_ERROR) {
+        return {
+            ...state,
+            showAlert: true,
+            alertType: 'danger',
+            alertText: action.payload.msg,
+            isloading: false
+        }
     }
     throw new Error(`No such action ${action.type}`)
 }
