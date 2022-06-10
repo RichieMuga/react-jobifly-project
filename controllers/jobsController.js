@@ -1,6 +1,8 @@
 import Job from "../models/jobs.js"
 import { StatusCodes } from "http-status-codes"
 import { BadRequestError, NotFoundError } from '../errors/index.js';
+import checkpermission from '../utils/checkpermission.js';
+import mongoose from 'mongoose'
 
 const createJob = async (req, res) => {
     const { company, position } = req.body
@@ -16,11 +18,41 @@ const createJob = async (req, res) => {
 }
 
 
-const showStats = (req, res) => {
-    res.send('show stats')
+const showStats = async (req, res) => {
+    // res.send('show stats')
+    // aggregate helps find the jobs matched to the user
+    let stats = await Job.aggregate([
+        { $match: { createdBy: mongoose.Types.ObjectId(req.user.userId) } },
+        // group enables us to make different cartegories of the schema type and add them e.g status
+        //sum enables us to calculate and return  the total value
+        { $group: { _id: '$status', howManyTimes: { $sum: 1 } } }
+    ])
+    // console.log(stats);
+
+    //converting the data to a sensible object
+    stats = stats.reduce((acc, curr) => {
+        // acc is total of all calculations
+        // current is the array/object we are looking for... i.e what properties
+        const { _id: title, howManyTimes } = curr
+        //dynamic objects in js
+        acc[title] = howManyTimes
+        return acc
+    }, {})
+
+
+
+    const defaultStats = {
+        pending: stats.pending || 0,
+        interview: stats.interview || 0,
+        declined: stats.declined || 0,
+    }
+    let monthlyApplications = []
+
+    res.status(StatusCodes.OK).json({ defaultStats, monthlyApplications })
 }
-const getAllJobs = (req, res) => {
-    res.send('get all jobs')
+const getAllJobs = async (req, res) => {
+    const jobs = await Job.find({ createdBy: req.user.userId })
+    res.status(StatusCodes.OK).json({ jobs, numofpages: 1, totalJobs: jobs.length })
 }
 // const createJob = (req, res) => {
 //     const { company, position } = req.body
@@ -35,11 +67,36 @@ const getAllJobs = (req, res) => {
 
 //     res.status(StatusCodes.CREATED).json({ job })
 // }
-const updateJob = (req, res) => {
-    res.send('UPDATE job')
+const updateJob = async (req, res) => {
+    const { id: jobId } = req.params
+    const { company, position } = req.body
+    if (!company || !position) {
+        throw BadRequestError('please enter all the fields')
+    }
+
+    const job = await Job.findOne({ _id: jobId })
+
+    if (!job) {
+        throw NotFoundError(`couldn't find job with id ${jobId}`)
+    }
+    //check permissions
+    checkpermission(req.user, job.createdBy)
+
+
+    const updateJob = await Job.findOneAndUpdate({ _id: jobId }, req.body, { new: true, runValidators: true })
+    res.status(StatusCodes.OK).json({ updateJob })
 }
-const deleteJob = (req, res) => {
-    res.send('delete job')
+const deleteJob = async (req, res) => {
+    const { id: jobId } = req.params
+
+    const job = await Job.findOne({ _id: jobId })
+
+    if (!job) {
+        throw NotFoundError(`couldn't find job with id ${jobId}`)
+    }
+    await Job.findOneAndDelete(job)
+
+    res.status(StatusCodes.OK).json({ msg: 'job deleted!' })
 }
 
 export { createJob, updateJob, getAllJobs, showStats, deleteJob }

@@ -18,6 +18,8 @@ const AddJob = () => {
         handlechange,
         clearvalues,
         createjob,
+        editedJobId,
+        editJob
     } = useAppContext()
     console.log(jobLocation);
 
@@ -35,10 +37,11 @@ const AddJob = () => {
             return
         }
         if (isEditing) {
-            console.log("object");
+            editJob()
             return
         }
         createjob()
+
     }
 
     return (

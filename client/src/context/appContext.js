@@ -18,7 +18,14 @@ import {
     CREATE_JOB_BEGIN,
     CREATE_JOB_SUCCESS,
     CREATE_JOB_ERROR,
-} from "./actions";
+    GET_JOBS_BEGIN,
+    GET_JOBS_SUCCESS,
+    SET_EDIT_JOB,
+    DELETE_JOBS_BEGIN,
+    EDIT_JOB_BEGIN,
+    EDIT_JOB_SUCCESS,
+    EDIT_JOB_ERROR
+} from './actions';
 import { reducer } from "./reducer";
 import axios from 'axios';
 //import { header } from "express/lib/request";
@@ -47,7 +54,11 @@ const initialState = {
     jobTypeOptions: ['full-time', 'part-time', 'remote', 'internship'],
     jobType: 'full-time',
     statusOptions: ['pending', 'declined', 'interview'],
-    status: 'pending'
+    status: 'pending',
+    jobs: [],
+    totalJobs: 0,
+    page: 1,
+    numOfPages: 1
 }
 
 //create context
@@ -200,8 +211,69 @@ const AppProvider = ({ children }) => {
         }
     }
 
+    const getJobs = async () => {
+        let url = `/jobs`
+        dispatch({ type: GET_JOBS_BEGIN })
+        try {
+            const { data } = await authFetch.get(url)
+            const { jobs, numofpages, totalJobs } = data
+            dispatch({
+                type: GET_JOBS_SUCCESS, payload: {
+                    jobs, numofpages, totalJobs
+                }
+            })
+
+        } catch (error) {
+            console.log(error.response);
+            //it doesnt make sense to be getting errors hence will log out user if incase it happens
+            // logout()
+        }
+        clearAlert()
+    }
+
+    const seteditJob = (id) => {
+        dispatch({ type: SET_EDIT_JOB, payload: { id } })
+    }
+
+    const editJob = async () => {
+        dispatch({ type: EDIT_JOB_BEGIN })
+        try {
+            const { company, position, jobLocation, jobType, status } = state
+            await authFetch.patch(`/jobs/${state.editedJobId}`, {
+                company,
+                position,
+                jobLocation,
+                jobType,
+                status
+            })
+            dispatch({ type: EDIT_JOB_SUCCESS })
+            dispatch({ type: CLEAR_VALUES })
+        } catch (error) {
+            if (error.response.status === 401) return
+            dispatch({
+                type: EDIT_JOB_ERROR,
+                payload: { msg: error.response.data.msg },
+            })
+        }
+        clearAlert()
+    }
+
+
+    const deleteJob = async (jobId) => {
+        // console.log(`delete job ${id}`);
+        dispatch({ type: DELETE_JOBS_BEGIN })
+        try {
+            //delete the job
+            await authFetch.delete(`/jobs/${jobId}`)
+            //get the latest jobs after deletion 
+            getJobs()
+        } catch (error) {
+            console.log(error.response);
+            // logout()
+        }
+    }
     return (
-        <AppContext.Provider value={{ ...state, displayAlert, registerUser, loginUser, toggleSidebar, logout, updateUser, handlechange, clearvalues, createjob }}>
+        <AppContext.Provider value={{ ...state, displayAlert, registerUser, loginUser, toggleSidebar, logout, updateUser, handlechange, clearvalues, createjob, getJobs, seteditJob, deleteJob, editJob }}>
             {children}
         </AppContext.Provider>
     )

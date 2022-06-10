@@ -16,7 +16,14 @@ import {
     CLEAR_VALUES,
     CREATE_JOB_BEGIN,
     CREATE_JOB_SUCCESS,
-    CREATE_JOB_ERROR
+    CREATE_JOB_ERROR,
+    GET_JOBS_BEGIN,
+    GET_JOBS_SUCCESS,
+    SET_EDIT_JOB,
+    DELETE_JOBS_BEGIN,
+    EDIT_JOB_BEGIN,
+    EDIT_JOB_SUCCESS,
+    EDIT_JOB_ERROR
 } from './actions';
 import { initialState } from './appContext';
 
@@ -161,6 +168,68 @@ const reducer = (state, action) => {
             isloading: false
         }
     }
+    if (action.type === GET_JOBS_BEGIN) {
+        return {
+            ...state,
+            showAlert: false,
+            isloading: true
+        }
+    }
+    if (action.type === GET_JOBS_SUCCESS) {
+        return {
+            ...state,
+            showAlert: true,
+            isloading: false,
+            jobs: action.payload.jobs,
+            totalJobs: action.payload.totalJobs,
+            numOfPages: action.payload.numofpages,
+        }
+    }
+
+    if (action.type === SET_EDIT_JOB) {
+        const job = state.jobs.find((jobo) => jobo._id === action.payload.id)
+        const { _id, position, company, jobLocation, jobType } = job
+        return {
+            ...state,
+            isEditing: true,
+            editedJobId: _id,
+            position,
+            company,
+            jobLocation,
+            jobType
+        }
+    }
+    if (action.type === DELETE_JOBS_BEGIN) {
+        return {
+            ...state,
+            isloading: true
+        }
+    }
+    if (action.type === EDIT_JOB_BEGIN) {
+        return {
+            ...state,
+            isloading: true
+        }
+    }
+    if (action.type === EDIT_JOB_SUCCESS) {
+        return {
+            ...state,
+            showAlert: true,
+            alertType: 'success',
+            alertText: "Job edited!",
+            isloading: false
+        }
+    }
+    if (action.type === EDIT_JOB_ERROR) {
+        return {
+            ...state,
+            showAlert: true,
+            alertType: 'danger',
+            alertText: action.payload.msg,
+            isloading: false
+        }
+    }
+
     throw new Error(`No such action ${action.type}`)
 }
 

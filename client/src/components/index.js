@@ -5,6 +5,13 @@ import NavBar from './NavBar';
 import SmallSideBar from './SmallSideBar';
 import BigSideBar from './BigSIdeBar';
 import FormRowSelect from './FormRowSelect';
+import SingleJobContainer from './SingleJobContainer';
+import SearchComponent from './SearchComponent';
+import Loading from './Loading';
+import JobInfo from './JobInfo';
+
+
+
 
 
 export {
@@ -14,5 +21,9 @@ export {
     BigSideBar,
     SmallSideBar,
     NavBar,
-    FormRowSelect
+    FormRowSelect,
+    SingleJobContainer,
+    SearchComponent,
+    Loading,
+    JobInfo
 }
