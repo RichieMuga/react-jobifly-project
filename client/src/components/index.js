@@ -9,6 +9,9 @@ import SingleJobContainer from './SingleJobContainer';
 import SearchComponent from './SearchComponent';
 import Loading from './Loading';
 import JobInfo from './JobInfo';
+import StatsContainer from './StatsContainer';
+import ChartContainer from './ChartContainer';
+import StatsItem from './StatsItem';
 
 
 
@@ -25,5 +28,8 @@ export {
     SingleJobContainer,
     SearchComponent,
     Loading,
-    JobInfo
+    JobInfo,
+    StatsContainer,
+    ChartContainer,
+    StatsItem
 }

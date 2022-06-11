@@ -11,7 +11,7 @@ const AllJobs = () => {
         getJobs()
     }, [])
     if (isLoading) {
-        <Loading />
+        <Loading center />
     }
     if (jobs.length === 0) {
         return (<Wrapper>

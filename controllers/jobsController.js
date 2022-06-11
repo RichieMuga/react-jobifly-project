@@ -3,6 +3,7 @@ import { StatusCodes } from "http-status-codes"
 import { BadRequestError, NotFoundError } from '../errors/index.js';
 import checkpermission from '../utils/checkpermission.js';
 import mongoose from 'mongoose'
+import moment from 'moment'
 
 const createJob = async (req, res) => {
     const { company, position } = req.body
@@ -46,12 +47,71 @@ const showStats = async (req, res) => {
         interview: stats.interview || 0,
         declined: stats.declined || 0,
     }
-    let monthlyApplications = []
+    let monthlyApplications = await Job.aggregate([
+        { $match: { createdBy: mongoose.Types.ObjectId(req.user.userId) } },
+        {
+            $group: {
+                _id:
+                {
+                    month: { $month: '$createdAt' },
+                    year: { $year: '$createdAt' },
+                },
+                count: { $sum: 1 }
+            }
+        },
+        { $sort: { '_id.year': -1, '_id.month': -1 } },
+        { $limit: 6 }
+    ])
+
+    monthlyApplications = monthlyApplications.map((item) => {
+        const { _id: { month, year }, count } = item
+        const date = moment().month(month).year(year).format('MMM Y')
+        return { date, count }
+    }).reverse()
 
     res.status(StatusCodes.OK).json({ defaultStats, monthlyApplications })
 }
 const getAllJobs = async (req, res) => {
-    const jobs = await Job.find({ createdBy: req.user.userId })
+    const { status, jobType, sort, search } = req.query
+    const queryObject = {
+        createdBy: req.user.userId,
+    }
+
+    //add code based on condition if and etc
+    if (status && status !== 'all') {
+        queryObject.status = status
+    }
+    if (jobType && jobType !== 'all') {
+        queryObject.jobType = jobType
+    }
+    if (search) {
+        queryObject.position = { $regex: search, $options: 'i' }
+    }
+
+
+
+    //No await
+    let result = Job.find(queryObject)
+    // console.log(result);
+
+    // chain sort condition
+
+    if (sort === 'latest') {
+        result = result.sort('-createdAt')
+    }
+    if (sort === 'oldest') {
+        result = result.sort('createdAt')
+    }
+    if (sort === 'a-z') {
+        result = result.sort('position')
+    }
+    if (sort === 'z-a') {
+        result = result.sort('-position')
+    }
+
+    const jobs = await result
+    // console.log(jobs);
+
     res.status(StatusCodes.OK).json({ jobs, numofpages: 1, totalJobs: jobs.length })
 }
 // const createJob = (req, res) => {

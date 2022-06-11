@@ -1,4 +1,4 @@
-import React, { useReducer, useContext } from "react";
+import React, { useReducer, useContext, useEffect } from "react";
 import {
     CLEAR_ALERT,
     DISPLAY_ALERT,
@@ -24,7 +24,9 @@ import {
     DELETE_JOBS_BEGIN,
     EDIT_JOB_BEGIN,
     EDIT_JOB_SUCCESS,
-    EDIT_JOB_ERROR
+    EDIT_JOB_ERROR,
+    SHOW_STATS_BEGIN,
+    SHOW_STATS_SUCCESS
 } from './actions';
 import { reducer } from "./reducer";
 import axios from 'axios';
@@ -58,14 +60,25 @@ const initialState = {
     jobs: [],
     totalJobs: 0,
     page: 1,
-    numOfPages: 1
+    numOfPages: 1,
+    stats: {},
+    monthlyApplications: [],
+    search: '',
+    searchJobType: 'all',
+    searchStatus: 'all',
+    sort: 'latest',
+    sortOptions: ['latest', 'oldest', 'a-z', 'z-a']
 }
+
+
+
 
 //create context
 const AppContext = React.createContext()
 
 const AppProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
+
 
 
     //axios
@@ -161,7 +174,6 @@ const AppProvider = ({ children }) => {
             })
         }
         clearAlert()
-
     }
     const logout = () => {
         dispatch({ type: LOG_OUT_USER })
@@ -272,8 +284,30 @@ const AppProvider = ({ children }) => {
             // logout()
         }
     }
+    const showStats = async () => {
+        dispatch({ type: SHOW_STATS_BEGIN })
+        try {
+            const { data } = await authFetch.get('/jobs/stats')
+            // console.log(data);
+            dispatch({
+                type: SHOW_STATS_SUCCESS,
+                payload: {
+                    stats: data.defaultStats,
+                    monthlyApplications: data.monthlyApplications
+                }
+            })
+
+        } catch (error) {
+            // console.log(error.response);
+            //logout user if  500 and 401 status error code
+        }
+        clearAlert()
+    }
+    const clearFilters = () => {
+        console.log('clear filters');
+    }
     return (
-        <AppContext.Provider value={{ ...state, displayAlert, registerUser, loginUser, toggleSidebar, logout, updateUser, handlechange, clearvalues, createjob, getJobs, seteditJob, deleteJob, editJob }}>
+        <AppContext.Provider value={{ ...state, displayAlert, registerUser, loginUser, toggleSidebar, logout, updateUser, handlechange, clearvalues, createjob, getJobs, seteditJob, deleteJob, editJob, showStats, clearFilters }}>
             {children}
         </AppContext.Provider>
     )

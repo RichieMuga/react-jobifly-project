@@ -21,7 +21,7 @@ const AddJob = () => {
         editedJobId,
         editJob
     } = useAppContext()
-    console.log(jobLocation);
+    // console.log(jobLocation);
 
     const handleJobInput = (e) => {
         e.preventDefault()
