@@ -220,9 +220,10 @@ const AppProvider = ({ children }) => {
         } catch (error) {
             if (error.response.status === 401) {
                 dispatch({ type: CREATE_JOB_ERROR, payload: { msg: error.response.message } })
-
+                clearAlert()
             }
         }
+        clearAlert()
     }
 
     const getJobs = async () => {
